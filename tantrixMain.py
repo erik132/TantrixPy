@@ -35,6 +35,7 @@ TANTRIX16 = ["y", "g", "g", "y", "r", "r"]
 
 class TantrixEngine(search.Problem):
     initial = []
+    tiles = []
     
     def __init__(self,initial,wildcard1):
         self.initial = initial
@@ -52,18 +53,51 @@ class TantrixEngine(search.Problem):
         
     def attachNeighbours(self,tileIndex):
         prevLine = -1
-        thisLine = -1
-        nextLine = -1
+        thisLine = 0
+        nextLine = 1
+        prevCount = 0
+        thisCount = 1
+        nextCount = 2
+        tileCount = len(self.tiles)
         
-        for i in range(TILE_SIDES):
-            return tileIndex
+        #find the line of our tile, not enough time to make it simpler
+        while tileIndex < thisLine or tileIndex > (thisLine + (thisCount - 1)):
+            prevLine = thisLine
+            prevCount = thisCount
+            thisLine = nextLine
+            thisCount = nextCount
+            nextLine = thisLine + thisCount
+            nextCount = nextCount + 1
+            
+        position = tileIndex - thisLine
+        if(prevLine != -1):
+            if(position > 0):
+                self.tiles[tileIndex].setNeighbour(self.tiles[prevLine + position - 1], 5)
+            if(position < thisCount - 1):
+                self.tiles[tileIndex].setNeighbour(self.tiles[prevLine + position], 0)
+            
+        if(position > 0):
+            self.tiles[tileIndex].setNeighbour(self.tiles[tileIndex - 1], 4)
+        if(position < thisCount - 1):
+            self.tiles[tileIndex].setNeighbour(self.tiles[tileIndex + 1], 1)
+            
+        if(nextLine >= tileCount):
+            self.tiles[tileIndex].setNeighbour(self.tiles[nextLine + position], 3)
+            self.tiles[tileIndex].setNeighbour(self.tiles[nextLine + position + 1], 2)
+            
+        
+        
         return tileIndex
         
+    def addTile(self,newTile):
+        self.tiles.append(newTile)
+        
+        
 
-
+print(Tile.TILE_SIDES)
         
 print("cyka blyat")
-print(TANTRIX01)
+print(len(TANTRIX01))
 t = 99999
 
 print(t)

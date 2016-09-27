@@ -5,8 +5,8 @@ Created on Sun Sep 25 17:22:29 2016
 @author: Erik
 """
 
-global TILE_SIDES = 6
-global HALF_TILE = 3
+TILE_SIDES = 6
+HALF_TILE = 3
 
 class Tile():
     colors = []
