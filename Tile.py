@@ -7,7 +7,7 @@ Created on Sun Sep 25 17:22:29 2016
 
 class Tile():
     colors = []
-    neighbours = []
+    neighbours = [None,None,None,None,None,None]
     id = 0
     TILE_SIDES = 6
     HALF_TILE = 3
