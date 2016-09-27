@@ -5,12 +5,14 @@ Created on Sun Sep 25 17:22:29 2016
 @author: Erik
 """
 
+global TILE_SIDES = 6
+global HALF_TILE = 3
+
 class Tile():
     colors = []
     neighbours = [None,None,None,None,None,None]
     id = 0
-    TILE_SIDES = 6
-    HALF_TILE = 3
+    
     
     
     def __init__(self, colors, id):
@@ -20,9 +22,9 @@ class Tile():
         
         
     def rotateRight(self):
-        tempColor = self.colors[self.TILE_SIDES - 1]
-        for i in range(0,self.TILE_SIDES - 1):
-            self.colors[self.TILE_SIDES - 1 - i] = self.colors[self.TILE_SIDES - 2 - i]
+        tempColor = self.colors[TILE_SIDES - 1]
+        for i in range(0,TILE_SIDES - 1):
+            self.colors[TILE_SIDES - 1 - i] = self.colors[TILE_SIDES - 2 - i]
         self.colors[0] = tempColor
     
 
@@ -30,7 +32,7 @@ class Tile():
         return "" + str(self.colors) + " " + str(self.id)
         
     def resetNeighbours(self):
-        for i in range(0,self.TILE_SIDES):
+        for i in range(0,TILE_SIDES):
             self.neighbours[i] = None
 
     def setNeighbour(self,neighbour,index):
@@ -64,20 +66,20 @@ class Tile():
         while(color0 != self.colors[side]):
             self.rotateRight()
             tries = tries + 1
-            if(tries > self.TILE_SIDES):
+            if(tries > TILE_SIDES):
                 return False
         return True
         
     def getNeighbourColor(self,nSide):
-        nSide = nSide + self.HALF_TILE
-        if(nSide > (self.TILE_SIDES - 1)):
-            nSide = nSide - self.TILE_SIDES
+        nSide = nSide + HALF_TILE
+        if(nSide > (TILE_SIDES - 1)):
+            nSide = nSide - TILE_SIDES
         return self.colors[nSide]
 
     def checkUpperColors(self):
         colorOther = ""
         
-        for i in range(4,self.TILE_SIDES):
+        for i in range(4,TILE_SIDES):
             if(self.neighbours[i] == None):
                 continue
             colorOther = self.neighbours[i].getNeighbourColor(i)

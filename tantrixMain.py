@@ -51,6 +51,12 @@ class TantrixEngine(search.Problem):
         return True
         
     def attachNeighbours(self,tileIndex):
+        prevLine = -1
+        thisLine = -1
+        nextLine = -1
+        
+        for i in range(TILE_SIDES):
+            return tileIndex
         return tileIndex
         
 
