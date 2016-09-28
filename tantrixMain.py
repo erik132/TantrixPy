@@ -36,13 +36,17 @@ TANTRIXC = (["r", "y", "y", "b", "r", "b"],
 class TantrixEngine(search.Problem):
     initial = []
     tiles = []
-    tileFilter = []
     
     def __init__(self,initial):
         self.initial = initial
 
     def actions(self, state):
-        actions = ["rotate"]
+        actions = []
+        tileCount = len(self.tiles)
+        
+        for i in range(tileCount):
+            if(i in state == False):
+                actions.append("put" + str(i))
         
         return tuple(actions)
         
@@ -86,8 +90,6 @@ class TantrixEngine(search.Problem):
             self.tiles[tileIndex].setNeighbour(self.tiles[nextLine + position], 3)
             self.tiles[tileIndex].setNeighbour(self.tiles[nextLine + position + 1], 2)
             
-        
-        
         return tileIndex
         
     def addTile(self,newTile):
@@ -97,7 +99,7 @@ class TantrixEngine(search.Problem):
         tileCount = len(self.tiles)
         
         for i in range(tileCount):
-            self.initial.append(i)
+            self.initial.append(None)
             
     def printState(self):
         result = ""
