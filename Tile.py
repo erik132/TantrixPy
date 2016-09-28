@@ -9,8 +9,8 @@ TILE_SIDES = 6
 HALF_TILE = 3
 
 class Tile():
-    colors = []
-    neighbours = [None,None,None,None,None,None]
+    colors = [] #keep in mind, this is static until overwrite from __init__
+    neighbours = None
     id = 0
     
     
@@ -18,7 +18,9 @@ class Tile():
     def __init__(self, colors, id):
         self.colors = colors
         self.id = id
-        self.resetNeighbours()
+        self.neighbours = []
+        for i in range(TILE_SIDES):
+            self.neighbours.append(None)
         
         
     def rotateRight(self):
@@ -31,12 +33,23 @@ class Tile():
     def printSignature(self):
         return "" + str(self.colors) + " " + str(self.id)
         
+    def printNeighbours(self):
+        result = str(self.getId()) + " of "
+        
+        for i in range(TILE_SIDES):
+            if(self.neighbours[i] == None):
+                result = result + "none "
+            else:
+                result = result + str(self.neighbours[i].getId()) + " "
+        return result
+        
     def resetNeighbours(self):
         for i in range(0,TILE_SIDES):
             self.neighbours[i] = None
 
     def setNeighbour(self,neighbour,index):
         self.neighbours[index] = neighbour
+        print("setting neighbour " + str(neighbour.getId()))
 
     def getNeighbour(self,index):
         return self.neighbours[index]
@@ -88,17 +101,5 @@ class Tile():
         
         return True
         
-        
-        
-colorConf = ['r','r','g','g','b','b']        
-        
-t1 = Tile(colorConf,12)
-tileList = [t1]
-print(t1.printSignature())
-print(tileList[0].printSignature())
-t1.setId(10)
-
-print(t1.printSignature())
-print(tileList[0].printSignature())
 
 

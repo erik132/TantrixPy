@@ -16,28 +16,29 @@ import search
 import Tile
 
 
-TANTRIX01 = ["r", "y", "y", "b", "r", "b"]
-TANTRIX02 = ["b", "y", "y", "b", "r", "r"]
-TANTRIX03 = ["y", "r", "r", "b", "b", "y"]
-TANTRIX04 = ["b", "y", "r", "b", "r", "y"]
-TANTRIX05 = ["r", "y", "y", "r", "b", "b"]
-TANTRIX06 = ["y", "r", "b", "y", "b", "r"]
-TANTRIX07 = ["r", "b", "b", "y", "r", "y"]
-TANTRIX08 = ["y", "b", "b", "r", "y", "r"]
-TANTRIX09 = ["r", "y", "b", "r", "b", "y"]
-TANTRIX10 = ["b", "y", "y", "r", "b", "r"]
-TANTRIX11 = ["y", "r", "r", "b", "y", "b"]
-TANTRIX12 = ["b", "r", "r", "y", "b", "y"]
-TANTRIX13 = ["y", "b", "b", "y", "r", "r"]
-TANTRIX14 = ["r", "y", "y", "b", "b", "r"]
-TANTRIX15 = ["r", "g", "g", "r", "y", "y"]
-TANTRIX16 = ["y", "g", "g", "y", "r", "r"]
+TANTRIXC = (["r", "y", "y", "b", "r", "b"],
+            ["b", "y", "y", "b", "r", "r"],
+            ["y", "r", "r", "b", "b", "y"],
+            ["b", "y", "r", "b", "r", "y"],
+            ["r", "y", "y", "r", "b", "b"],
+            ["y", "r", "b", "y", "b", "r"],
+            ["r", "b", "b", "y", "r", "y"],
+            ["y", "b", "b", "r", "y", "r"],
+            ["r", "y", "b", "r", "b", "y"],
+            ["b", "y", "y", "r", "b", "r"],
+            ["y", "r", "r", "b", "y", "b"],
+            ["b", "r", "r", "y", "b", "y"],
+            ["y", "b", "b", "y", "r", "r"],
+            ["r", "y", "y", "b", "b", "r"],
+            ["r", "g", "g", "r", "y", "y"],
+            ["y", "g", "g", "y", "r", "r"])
 
 class TantrixEngine(search.Problem):
     initial = []
     tiles = []
+    tileFilter = []
     
-    def __init__(self,initial,wildcard1):
+    def __init__(self,initial):
         self.initial = initial
 
     def actions(self, state):
@@ -81,7 +82,7 @@ class TantrixEngine(search.Problem):
         if(position < thisCount - 1):
             self.tiles[tileIndex].setNeighbour(self.tiles[tileIndex + 1], 1)
             
-        if(nextLine >= tileCount):
+        if(nextLine < tileCount):
             self.tiles[tileIndex].setNeighbour(self.tiles[nextLine + position], 3)
             self.tiles[tileIndex].setNeighbour(self.tiles[nextLine + position + 1], 2)
             
@@ -92,12 +93,52 @@ class TantrixEngine(search.Problem):
     def addTile(self,newTile):
         self.tiles.append(newTile)
         
+    def readyStruct(self):
+        tileCount = len(self.tiles)
         
+        for i in range(tileCount):
+            self.initial.append(i)
+            
+    def printState(self):
+        result = ""
+        for i in range(len(self.initial)):
+            result = result + str(self.initial[i]) + " "
+        return result
+        
+    def printNeighbours(self):
+        result = ""
+        
+        for i in range(len(self.tiles)):
+            result = result + self.tiles[i].printNeighbours() + "\n"
+        return result
+        
+    def printSignatures(self):
+        result = ""
+        
+        for i in range(len(self.tiles)):
+            result = result + self.tiles[i].printSignature() + "\n"
+        return result
+        
+    def attachAllNeighbours(self):
+        for i in range(len(self.tiles)):
+            self.attachNeighbours(i)
+        
+        
+
+engine = TantrixEngine([])
+
+
+for i in range(6):
+    engine.addTile(Tile.Tile(TANTRIXC[i],i+1))
+
+
+engine.readyStruct()
+
+engine.attachAllNeighbours()
+print("we are ready")
+print(engine.printNeighbours())
+print(engine.printSignatures())
+print(engine.printState())
 
 print(Tile.TILE_SIDES)
-        
 print("cyka blyat")
-print(len(TANTRIX01))
-t = 99999
-
-print(t)
