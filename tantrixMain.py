@@ -7,10 +7,11 @@ Created on Sun Sep 25 16:45:20 2016
 
 import sys
 
-i1 = "C:\\machine learning\\aimapy\\TantrixPy" in  sys.path
+tantrixPath = "C:\\machine learning\\aimapy\\TantrixPy"
+i1 = tantrixPath in  sys.path
 print(i1)
 if(i1 == False):
-    sys.path.append("C:\\machine learning\\aimapy\\TantrixPy")
+    sys.path.append(tantrixPath)
 
 import search
 import Tile
@@ -34,28 +35,73 @@ TANTRIXC = (["r", "y", "y", "b", "r", "b"],
             ["y", "g", "g", "y", "r", "r"])
 
 class TantrixEngine(search.Problem):
-    initial = [] #pointer array where each element points to an element in tile array
+    initial = tuple([]) #pointer array where each element points to an element in tile array
     tiles = []
     
     def __init__(self,initial):
-        self.initial = initial
+        self.initial = tuple(initial)
 
     def actions(self, state):
         actions = []
         tileCount = len(self.tiles)
         
         for i in range(tileCount):
-            if(i in state == False):
+            if((i in state) == False):
                 actions.append(str(i))
         
         return tuple(actions)
         
     def result(self, state, action):
-        return state
+        state2 = list(state)
+        vacantSlot = state2.index(-1)
+        state2[vacantSlot] = int(action)
+        
+        return tuple(state2)
         
     def goal_test(self,state):
-        return True
+        state2 = list(state)
+        if(-1 in state2):
+            return False
+        else:
+            if(self.testPermut(state2)):
+                print(self.printSignatures(state2))
+                return True
+            else:
+                return False
         
+    def testPermut(self,state):
+        result = False
+        self.detachAllNeighbours()
+        self.attachAllNeighbours(state)
+        
+        for i in range(Tile.TILE_SIDES):
+            self.tiles[state[0]].rotateRight()
+            result = self.testRec(1,state)
+            if(result):
+                break
+            
+        return result
+        
+        
+    def testRec(self,index,state):
+        tile1 = self.tiles[state[index]]
+        result = False
+        
+        for i in range(2):
+            if(not tile1.alignTo0()):
+                break
+            
+            if(tile1.checkUpperColors()):
+                if(index < len(self.tiles) - 1):
+                    result = self.testRec(index + 1, state)
+                    if(result):
+                        return result
+                else:
+                    return True
+        return result
+        
+        
+    #tileIndex is misleading, as it is the element number in the pointer array.
     def attachNeighbours(self,tileIndex, state):
         prevLine = -1
         thisLine = 0
@@ -109,8 +155,6 @@ class TantrixEngine(search.Problem):
     def readyStruct(self):
         tileCount = len(self.tiles)
         
-        for i in range(tileCount):
-            self.initial.append(-1)
             
             
     def printState(self,state):
@@ -148,17 +192,25 @@ class TantrixEngine(search.Problem):
             self.tiles[i].resetNeighbours()
         
         
+            
 
-engine = TantrixEngine([])
+            
+tileAmount = 10
+order = []
+for i in range(tileAmount):
+    order.append(-1)
+
+engine = TantrixEngine(order)
 
 
-for i in range(3):
+for i in range(tileAmount):
     engine.addTile(Tile.Tile(TANTRIXC[i],i+1))
 
 
 engine.readyStruct()
+search.breadth_first_search(engine)
+"""print(engine.actions(order))
 
-order = [2,1,0]
 
 engine.attachAllNeighbours(order)
 print("we are ready")
@@ -168,4 +220,5 @@ print(engine.printState(order))
 
 print(Tile.TILE_SIDES)
 print("cyka blyat")
+print(engine.goal_test(order))"""
 
