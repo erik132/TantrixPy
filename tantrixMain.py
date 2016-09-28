@@ -34,7 +34,7 @@ TANTRIXC = (["r", "y", "y", "b", "r", "b"],
             ["y", "g", "g", "y", "r", "r"])
 
 class TantrixEngine(search.Problem):
-    initial = []
+    initial = [] #pointer array where each element points to an element in tile array
     tiles = []
     
     def __init__(self,initial):
@@ -46,7 +46,7 @@ class TantrixEngine(search.Problem):
         
         for i in range(tileCount):
             if(i in state == False):
-                actions.append("put" + str(i))
+                actions.append(str(i))
         
         return tuple(actions)
         
@@ -56,7 +56,7 @@ class TantrixEngine(search.Problem):
     def goal_test(self,state):
         return True
         
-    def attachNeighbours(self,tileIndex):
+    def attachNeighbours(self,tileIndex, state):
         prevLine = -1
         thisLine = 0
         nextLine = 1
@@ -64,6 +64,7 @@ class TantrixEngine(search.Problem):
         thisCount = 1
         nextCount = 2
         tileCount = len(self.tiles)
+        tempPos = -1
         
         #find the line of our tile, not enough time to make it simpler
         while tileIndex < thisLine or tileIndex > (thisLine + (thisCount - 1)):
@@ -77,20 +78,30 @@ class TantrixEngine(search.Problem):
         position = tileIndex - thisLine
         if(prevLine != -1):
             if(position > 0):
-                self.tiles[tileIndex].setNeighbour(self.tiles[prevLine + position - 1], 5)
+                tempPos = state[prevLine + position - 1]
+                self.tiles[state[tileIndex]].setNeighbour(self.tiles[tempPos], 5)
+                    
             if(position < thisCount - 1):
-                self.tiles[tileIndex].setNeighbour(self.tiles[prevLine + position], 0)
+                tempPos = state[prevLine + position]
+                self.tiles[state[tileIndex]].setNeighbour(self.tiles[tempPos], 0)
             
         if(position > 0):
-            self.tiles[tileIndex].setNeighbour(self.tiles[tileIndex - 1], 4)
+            tempPos = state[tileIndex - 1]
+            self.tiles[state[tileIndex]].setNeighbour(self.tiles[tempPos], 4)
         if(position < thisCount - 1):
-            self.tiles[tileIndex].setNeighbour(self.tiles[tileIndex + 1], 1)
+            tempPos = state[tileIndex + 1]
+            if(tempPos != -1):
+                self.tiles[state[tileIndex]].setNeighbour(self.tiles[tempPos], 1)
             
         if(nextLine < tileCount):
-            self.tiles[tileIndex].setNeighbour(self.tiles[nextLine + position], 3)
-            self.tiles[tileIndex].setNeighbour(self.tiles[nextLine + position + 1], 2)
+            tempPos = state[nextLine + position]
+            if(tempPos != -1):
+                self.tiles[state[tileIndex]].setNeighbour(self.tiles[tempPos], 3)
             
-        return tileIndex
+            tempPos = state[nextLine + position + 1]
+            if(tempPos != -1):
+                self.tiles[state[tileIndex]].setNeighbour(self.tiles[tempPos], 2)
+            
         
     def addTile(self,newTile):
         self.tiles.append(newTile)
@@ -99,12 +110,15 @@ class TantrixEngine(search.Problem):
         tileCount = len(self.tiles)
         
         for i in range(tileCount):
-            self.initial.append(None)
+            self.initial.append(-1)
             
-    def printState(self):
+            
+    def printState(self,state):
         result = ""
-        for i in range(len(self.initial)):
-            result = result + str(self.initial[i]) + " "
+        for i in range(len(self.tiles)):
+            if(state[i] == -1):
+                break
+            result = result + str(self.tiles[state[i]].getId()) + " "
         return result
         
     def printNeighbours(self):
@@ -114,33 +128,44 @@ class TantrixEngine(search.Problem):
             result = result + self.tiles[i].printNeighbours() + "\n"
         return result
         
-    def printSignatures(self):
+    def printSignatures(self,state):
         result = ""
         
         for i in range(len(self.tiles)):
-            result = result + self.tiles[i].printSignature() + "\n"
+            if(state[i] == -1):
+                break
+            result = result + self.tiles[state[i]].printSignature() + "\n"
         return result
         
-    def attachAllNeighbours(self):
+    def attachAllNeighbours(self,state):
         for i in range(len(self.tiles)):
-            self.attachNeighbours(i)
+            if(state[i] == -1):
+                break
+            self.attachNeighbours(i,state)
+            
+    def detachAllNeighbours(self):
+        for i in range(len(self.tiles)):
+            self.tiles[i].resetNeighbours()
         
         
 
 engine = TantrixEngine([])
 
 
-for i in range(6):
+for i in range(3):
     engine.addTile(Tile.Tile(TANTRIXC[i],i+1))
 
 
 engine.readyStruct()
 
-engine.attachAllNeighbours()
+order = [2,1,0]
+
+engine.attachAllNeighbours(order)
 print("we are ready")
 print(engine.printNeighbours())
-print(engine.printSignatures())
-print(engine.printState())
+print(engine.printSignatures(order))
+print(engine.printState(order))
 
 print(Tile.TILE_SIDES)
 print("cyka blyat")
+

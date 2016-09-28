@@ -49,7 +49,6 @@ class Tile():
 
     def setNeighbour(self,neighbour,index):
         self.neighbours[index] = neighbour
-        print("setting neighbour " + str(neighbour.getId()))
 
     def getNeighbour(self,index):
         return self.neighbours[index]
