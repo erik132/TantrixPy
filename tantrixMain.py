@@ -45,10 +45,21 @@ class TantrixEngine(search.Problem):
     def actions(self, state):
         actions = []
         tileCount = len(self.tiles)
+        lineLimit = 1;
+        lineCurrent = 0;
         
         for i in range(tileCount):
             if((i in state) == False):
                 actions.append(str(i))
+            else:
+                lineCurrent = lineCurrent + 1
+                if(lineLimit == lineCurrent):
+                    lineCurrent = 0
+                    lineLimit = lineLimit + 1
+        if(lineCurrent == 0 and (-1 in state)):
+            if(self.testPermut(list(state),state.index(-1) - 1) == False):
+                return tuple([])
+            
         
         return tuple(actions)
         
@@ -77,11 +88,12 @@ class TantrixEngine(search.Problem):
         
     def testPermut(self,state,toIndex):
         result = False
+        if(toIndex <= 0):
+            return True
+            
         self.detachAllNeighbours()
         self.attachNeighbours(toIndex,state)
         
-        if(toIndex == 0):
-            return True
         
         for i in range(Tile.TILE_SIDES):
             self.tiles[state[0]].rotateRight()
@@ -120,7 +132,7 @@ class TantrixEngine(search.Problem):
         nextCount = 2
         tileCount = len(self.tiles)
         tempPos = -1
-            
+        #print("to index " + str(toIndex) + " " + str(state))
             
         for tileIndex in range(toIndex + 1):
             if(state[tileIndex] == -1):
@@ -228,6 +240,7 @@ for i in range(tileAmount):
 
 
 engine.readyStruct()
+#print(engine.actions([0,1,2,3,-1,-1]))
 #engine.attachAllNeighbours([5,4,3,2,1,0])
 #print(engine.testPermut([5,4,3,-1,-1,-1],2))
 #print(engine.printNeighbours())

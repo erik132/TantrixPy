@@ -63,7 +63,6 @@ class Tile():
     def alignTo0(self):
         color0 = ''
         side = 0
-        
         if(self.neighbours[0] != None):
             color0 = self.neighbours[0].getNeighbourColor(0)
             side = 0
