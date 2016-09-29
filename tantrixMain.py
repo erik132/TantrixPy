@@ -69,6 +69,10 @@ class TantrixEngine(search.Problem):
                 return True
             else:
                 return False
+                
+    def value(self,state):
+        state2 = list(state)
+        vacantSlot = state2.index(-1)
         
     def testPermut(self,state):
         result = False
@@ -219,12 +223,12 @@ for i in range(tileAmount):
 
 
 engine.readyStruct()
-brutalForce(engine)
-#while genList = next(gen1):
-    #print(genList)
-
-
+#brutalForce(engine)
+print("search start")
 #search.depth_limited_search(engine,15)
+search.depth_first_graph_search(engine)
+print("search end")
+
 """print(engine.actions(order))
 
 
