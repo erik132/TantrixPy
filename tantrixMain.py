@@ -6,6 +6,7 @@ Created on Sun Sep 25 16:45:20 2016
 """
 
 import sys
+import itertools
 
 tantrixPath = "C:\\machine learning\\aimapy\\TantrixPy"
 i1 = tantrixPath in  sys.path
@@ -193,9 +194,19 @@ class TantrixEngine(search.Problem):
         
         
             
-
+def brutalForce(tant):
+    initList = []
+    for i in range(len(tant.initial)):
+        initList.append(i)
+    
+    
+    permGen = itertools.permutations(initList)
+    for perm in permGen:
+        if(tant.goal_test(perm)):
+            break
+        
             
-tileAmount = 10
+tileAmount = 15
 order = []
 for i in range(tileAmount):
     order.append(-1)
@@ -208,7 +219,12 @@ for i in range(tileAmount):
 
 
 engine.readyStruct()
-search.breadth_first_search(engine)
+brutalForce(engine)
+#while genList = next(gen1):
+    #print(genList)
+
+
+#search.depth_limited_search(engine,15)
 """print(engine.actions(order))
 
 
