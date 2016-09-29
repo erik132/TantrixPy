@@ -240,27 +240,11 @@ for i in range(tileAmount):
 
 
 engine.readyStruct()
-#print(engine.actions([0,1,2,3,-1,-1]))
-#engine.attachAllNeighbours([5,4,3,2,1,0])
-#print(engine.testPermut([5,4,3,-1,-1,-1],2))
-#print(engine.printNeighbours())
-#brutalForce(engine)
+
 print("search start")
 #brutalForce(engine)
-search.depth_limited_search(engine,15)
-#search.depth_first_graph_search(engine)
+#search.breadth_first_search(engine)
+#search.depth_limited_search(engine,15)
+search.depth_first_graph_search(engine)
 print("search end")
-
-"""print(engine.actions(order))
-
-
-engine.attachAllNeighbours(order)
-print("we are ready")
-print(engine.printNeighbours())
-print(engine.printSignatures(order))
-print(engine.printState(order))
-
-print(Tile.TILE_SIDES)
-print("cyka blyat")
-print(engine.goal_test(order))"""
 
