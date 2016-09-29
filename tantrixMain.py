@@ -64,7 +64,7 @@ class TantrixEngine(search.Problem):
         if(-1 in state2):
             return False
         else:
-            if(self.testPermut(state2)):
+            if(self.testPermut(state2,len(self.tiles) - 1)):
                 print(self.printSignatures(state2))
                 return True
             else:
@@ -73,22 +73,26 @@ class TantrixEngine(search.Problem):
     def value(self,state):
         state2 = list(state)
         vacantSlot = state2.index(-1)
+        return vacantSlot
         
-    def testPermut(self,state):
+    def testPermut(self,state,toIndex):
         result = False
         self.detachAllNeighbours()
-        self.attachAllNeighbours(state)
+        self.attachNeighbours(toIndex,state)
+        
+        if(toIndex == 0):
+            return True
         
         for i in range(Tile.TILE_SIDES):
             self.tiles[state[0]].rotateRight()
-            result = self.testRec(1,state)
+            result = self.testRec(1,state, toIndex)
             if(result):
                 break
             
         return result
         
         
-    def testRec(self,index,state):
+    def testRec(self,index,state, toIndex):
         tile1 = self.tiles[state[index]]
         result = False
         
@@ -97,8 +101,8 @@ class TantrixEngine(search.Problem):
                 break
             
             if(tile1.checkUpperColors()):
-                if(index < len(self.tiles) - 1):
-                    result = self.testRec(index + 1, state)
+                if(index < toIndex):
+                    result = self.testRec(index + 1, state,toIndex)
                     if(result):
                         return result
                 else:
@@ -107,7 +111,7 @@ class TantrixEngine(search.Problem):
         
         
     #tileIndex is misleading, as it is the element number in the pointer array.
-    def attachNeighbours(self,tileIndex, state):
+    def attachNeighbours(self,toIndex, state):
         prevLine = -1
         thisLine = 0
         nextLine = 1
@@ -116,42 +120,46 @@ class TantrixEngine(search.Problem):
         nextCount = 2
         tileCount = len(self.tiles)
         tempPos = -1
-        
-        #find the line of our tile, not enough time to make it simpler
-        while tileIndex < thisLine or tileIndex > (thisLine + (thisCount - 1)):
-            prevLine = thisLine
-            prevCount = thisCount
-            thisLine = nextLine
-            thisCount = nextCount
-            nextLine = thisLine + thisCount
-            nextCount = nextCount + 1
             
-        position = tileIndex - thisLine
-        if(prevLine != -1):
+            
+        for tileIndex in range(toIndex + 1):
+            if(state[tileIndex] == -1):
+                break
+            if(tileIndex > (thisLine + (thisCount - 1)) ):
+                prevLine = thisLine
+                prevCount = thisCount
+                thisLine = nextLine
+                thisCount = nextCount
+                nextLine = thisLine + thisCount
+                nextCount = nextCount + 1
+            
+            
+            position = tileIndex - thisLine
+            if(prevLine != -1):
+                if(position > 0):
+                    tempPos = state[prevLine + position - 1]
+                    self.tiles[state[tileIndex]].setNeighbour(self.tiles[tempPos], 5)
+                        
+                if(position < thisCount - 1):
+                    tempPos = state[prevLine + position]
+                    self.tiles[state[tileIndex]].setNeighbour(self.tiles[tempPos], 0)
+                
             if(position > 0):
-                tempPos = state[prevLine + position - 1]
-                self.tiles[state[tileIndex]].setNeighbour(self.tiles[tempPos], 5)
-                    
+                tempPos = state[tileIndex - 1]
+                self.tiles[state[tileIndex]].setNeighbour(self.tiles[tempPos], 4)
             if(position < thisCount - 1):
-                tempPos = state[prevLine + position]
-                self.tiles[state[tileIndex]].setNeighbour(self.tiles[tempPos], 0)
-            
-        if(position > 0):
-            tempPos = state[tileIndex - 1]
-            self.tiles[state[tileIndex]].setNeighbour(self.tiles[tempPos], 4)
-        if(position < thisCount - 1):
-            tempPos = state[tileIndex + 1]
-            if(tempPos != -1):
-                self.tiles[state[tileIndex]].setNeighbour(self.tiles[tempPos], 1)
-            
-        if(nextLine < tileCount):
-            tempPos = state[nextLine + position]
-            if(tempPos != -1):
-                self.tiles[state[tileIndex]].setNeighbour(self.tiles[tempPos], 3)
-            
-            tempPos = state[nextLine + position + 1]
-            if(tempPos != -1):
-                self.tiles[state[tileIndex]].setNeighbour(self.tiles[tempPos], 2)
+                tempPos = state[tileIndex + 1]
+                if(tempPos != -1):
+                    self.tiles[state[tileIndex]].setNeighbour(self.tiles[tempPos], 1)
+                
+            if(nextLine < tileCount):
+                tempPos = state[nextLine + position]
+                if(tempPos != -1):
+                    self.tiles[state[tileIndex]].setNeighbour(self.tiles[tempPos], 3)
+                
+                tempPos = state[nextLine + position + 1]
+                if(tempPos != -1):
+                    self.tiles[state[tileIndex]].setNeighbour(self.tiles[tempPos], 2)
             
         
     def addTile(self,newTile):
@@ -187,10 +195,7 @@ class TantrixEngine(search.Problem):
         return result
         
     def attachAllNeighbours(self,state):
-        for i in range(len(self.tiles)):
-            if(state[i] == -1):
-                break
-            self.attachNeighbours(i,state)
+        self.attachNeighbours(len(self.tiles)-1,state)
             
     def detachAllNeighbours(self):
         for i in range(len(self.tiles)):
@@ -223,10 +228,14 @@ for i in range(tileAmount):
 
 
 engine.readyStruct()
+#engine.attachAllNeighbours([5,4,3,2,1,0])
+#print(engine.testPermut([5,4,3,-1,-1,-1],2))
+#print(engine.printNeighbours())
 #brutalForce(engine)
 print("search start")
-#search.depth_limited_search(engine,15)
-search.depth_first_graph_search(engine)
+#brutalForce(engine)
+search.depth_limited_search(engine,15)
+#search.depth_first_graph_search(engine)
 print("search end")
 
 """print(engine.actions(order))
